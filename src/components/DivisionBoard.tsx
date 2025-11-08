@@ -12,15 +12,6 @@ interface DivisionBoardProps {
   onNext: (newDifficulty?: DifficultyLevel) => void;
 }
 
-interface DivisionStep {
-  stepNumber: number;
-  currentNumber: number;
-  quotientDigit: number;
-  product: number;
-  remainder: number;
-  broughtDownDigit: number;
-}
-
 export default function DivisionBoard({ difficulty, onBack, onNext }: DivisionBoardProps) {
   const [problem, setProblem] = useState<MathProblem>(generateDivisionProblem(difficulty));
   const [userInputs, setUserInputs] = useState<{ [key: string]: string }>({});
@@ -143,27 +134,26 @@ export default function DivisionBoard({ difficulty, onBack, onNext }: DivisionBo
           className="card mb-8"
         >
           {/* Main Division Grid */}
-          <div className="mb-8 flex justify-center">
-            <div className="font-mono text-lg space-y-2">
+          <div className="mb-8 flex justify-center bg-gradient-to-br from-blue-50 to-indigo-50 p-8 rounded-2xl border-2 border-blue-200">
+            <div className="font-mono text-xl space-y-3">
               {/* Quotient Row */}
-              <div className="flex items-center gap-1 mb-4">
+              <div className="flex items-center gap-2 mb-6">
                 {dividendStr.split('').map((_, idx) => (
                   <div key={`quotient-${idx}`} className="relative">
                     <input
-                      type="number"
-                      min="0"
-                      max="9"
+                      type="text"
+                      inputMode="numeric"
                       maxLength="1"
                       placeholder="?"
                       value={userInputs[`quotient-${idx}`] || ''}
                       onChange={(e) => {
-                        if (e.target.value.length <= 1) {
+                        if (e.target.value.length <= 1 && /^\d*$/.test(e.target.value)) {
                           handleInputChange(`quotient-${idx}`, e.target.value);
                         }
                       }}
                       disabled={submitted || idx >= currentStep + 1}
-                      className={`input-cell w-10 h-10 text-center font-bold ${
-                        inputErrors[`quotient-${idx}`] ? 'border-red-500' : ''
+                      className={`input-cell w-14 h-14 text-center font-bold text-lg ${
+                        inputErrors[`quotient-${idx}`] ? 'border-red-500 ring-red-300' : ''
                       }`}
                     />
                   </div>
@@ -171,15 +161,15 @@ export default function DivisionBoard({ difficulty, onBack, onNext }: DivisionBo
               </div>
 
               {/* Divisor Line */}
-              <div className="flex items-center gap-2">
-                <div className="text-lg font-bold">{problem.divisor}</div>
-                <div className="border-b-4 border-black" style={{ width: '100px' }}></div>
+              <div className="flex items-center gap-3 mb-6">
+                <div className="text-2xl font-bold text-gray-800">{problem.divisor}</div>
+                <div className="border-b-4 border-gray-800" style={{ width: '120px' }}></div>
               </div>
 
               {/* Dividend Row */}
-              <div className="flex items-center gap-1 mb-4">
+              <div className="flex items-center gap-2 mb-6">
                 {dividendStr.split('').map((digit, idx) => (
-                  <div key={`dividend-${idx}`} className="w-10 h-10 flex items-center justify-center font-bold border border-gray-400">
+                  <div key={`dividend-${idx}`} className="w-14 h-14 flex items-center justify-center font-bold text-lg border-2 border-gray-600 bg-white rounded-lg shadow-md">
                     {digit}
                   </div>
                 ))}
@@ -200,13 +190,16 @@ export default function DivisionBoard({ difficulty, onBack, onNext }: DivisionBo
                           How many times does {problem.divisor} go into {step.currentNumber}?
                         </label>
                         <input
-                          type="number"
-                          min="0"
-                          max="9"
+                          type="text"
+                          inputMode="numeric"
                           maxLength="1"
                           placeholder="?"
                           value={userInputs[`quotient-step-${currentStep}`] || ''}
-                          onChange={(e) => handleInputChange(`quotient-step-${currentStep}`, e.target.value)}
+                          onChange={(e) => {
+                            if (e.target.value.length <= 1 && /^\d*$/.test(e.target.value)) {
+                              handleInputChange(`quotient-step-${currentStep}`, e.target.value);
+                            }
+                          }}
                           disabled={submitted}
                           className="input-cell w-16 h-10 text-center font-bold"
                         />
@@ -218,10 +211,15 @@ export default function DivisionBoard({ difficulty, onBack, onNext }: DivisionBo
                           {step.quotientDigit} × {problem.divisor} = ?
                         </label>
                         <input
-                          type="number"
+                          type="text"
+                          inputMode="numeric"
                           placeholder="?"
                           value={userInputs[`product-step-${currentStep}`] || ''}
-                          onChange={(e) => handleInputChange(`product-step-${currentStep}`, e.target.value)}
+                          onChange={(e) => {
+                            if (/^\d*$/.test(e.target.value)) {
+                              handleInputChange(`product-step-${currentStep}`, e.target.value);
+                            }
+                          }}
                           disabled={submitted}
                           className="input-cell w-16 h-10 text-center font-bold"
                         />
@@ -233,10 +231,15 @@ export default function DivisionBoard({ difficulty, onBack, onNext }: DivisionBo
                           {step.currentNumber} - {step.product} = ?
                         </label>
                         <input
-                          type="number"
+                          type="text"
+                          inputMode="numeric"
                           placeholder="?"
                           value={userInputs[`subtract-step-${currentStep}`] || ''}
-                          onChange={(e) => handleInputChange(`subtract-step-${currentStep}`, e.target.value)}
+                          onChange={(e) => {
+                            if (/^\d*$/.test(e.target.value)) {
+                              handleInputChange(`subtract-step-${currentStep}`, e.target.value);
+                            }
+                          }}
                           disabled={submitted}
                           className="input-cell w-16 h-10 text-center font-bold"
                         />
